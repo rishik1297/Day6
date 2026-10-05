@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="theme-color" content="#f3f4eb">
+	<title>Good Things - The Recipe Index</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			color-scheme: light;
+			--paper: #f3f4eb;
+			--ink: #171a18;
+			--muted: #666a62;
+			--line: #c8cbbf;
+			--red: #ed553e;
+			--blue: #2949c7;
+			--lime: #d8ff43;
+			--mono: "DM Mono", "Courier New", monospace;
+			--display: "Space Grotesk", "Trebuchet MS", sans-serif;
+		}
+
+		* { box-sizing: border-box; }
+
+		body {
+			margin: 0;
+			background-color: var(--paper);
+			background-image: radial-gradient(#aeb2a3 0.65px, transparent 0.65px);
+			background-size: 9px 9px;
+			color: var(--ink);
+			font-family: var(--display);
+		}
+
+		button, input { font: inherit; }
+
+		.masthead {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			min-height: 54px;
+			padding: 0 6vw;
+			background: var(--ink);
+			color: var(--paper);
+			font: 500 11px var(--mono);
+			letter-spacing: 0.06em;
+			text-transform: uppercase;
+		}
+
+		.masthead strong { color: var(--lime); font-weight: 500; }
+		.masthead span:last-child { color: #c7cabd; }
+
+		main {
+			width: min(1160px, calc(100% - 48px));
+			margin: 0 auto;
+		}
+
+		.intro {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) 220px;
+			align-items: end;
+			gap: 32px;
+			padding: 64px 0 35px;
+		}
+
+		.eyebrow, .section-label, .card-meta, .status, .intro-note {
+			font-family: var(--mono);
+			text-transform: uppercase;
+		}
+
+		.eyebrow {
+			margin: 0 0 14px;
+			color: var(--blue);
+			font-size: 11px;
+			letter-spacing: 0.07em;
+		}
+
+		h1 {
+			max-width: 700px;
+			margin: 0;
+			font-size: 88px;
+			font-weight: 700;
+			line-height: 0.88;
+			letter-spacing: 0;
+			text-transform: uppercase;
+		}
+
+		h1 span {
+			display: inline-block;
+			padding: 2px 12px 8px 8px;
+			background: var(--lime);
+			transform: rotate(-1.5deg);
+		}
+
+		.intro-note {
+			margin: 0 0 3px;
+			padding-left: 15px;
+			border-left: 3px solid var(--red);
+			color: var(--muted);
+			font-size: 11px;
+			line-height: 1.7;
+		}
+
+		.search-bar {
+			display: flex;
+			gap: 8px;
+			max-width: 720px;
+			padding: 8px;
+			border: 1px solid var(--ink);
+			background: var(--paper);
+			box-shadow: 4px 4px 0 var(--ink);
+		}
+
+		.search-bar input {
+			flex: 1;
+			min-width: 0;
+			padding: 11px 12px;
+			border: 0;
+			outline: 0;
+			background: transparent;
+			color: var(--ink);
+			font-size: 16px;
+		}
+
+		.search-bar input::placeholder { color: #74776f; opacity: 1; }
+		.search-bar:focus-within { outline: 3px solid var(--lime); outline-offset: 3px; }
+
+		.search-bar button {
+			min-width: 122px;
+			padding: 0 20px;
+			border: 0;
+			background: var(--blue);
+			color: white;
+			cursor: pointer;
+			font: 500 11px var(--mono);
+			text-transform: uppercase;
+		}
+
+		.search-bar button:hover { background: var(--red); }
+		.search-bar button:focus-visible { outline: 3px solid var(--lime); outline-offset: 3px; }
+		.search-bar button:disabled { cursor: wait; opacity: 0.65; }
+
+		.results-heading {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 16px;
+			margin: 54px 0 17px;
+			padding: 0 0 12px;
+			border-bottom: 1px solid var(--ink);
+		}
+
+		.results-heading h2 {
+			margin: 0;
+			font-size: 17px;
+			font-weight: 600;
+			text-transform: uppercase;
+		}
+
+		.favorites-filter {
+			padding: 8px 10px;
+			border: 1px solid var(--ink);
+			background: var(--paper);
+			color: var(--ink);
+			cursor: pointer;
+			font: 500 10px var(--mono);
+			text-transform: uppercase;
+		}
+
+		.favorites-filter[aria-pressed="true"] { background: var(--red); color: white; }
+		.favorites-filter:hover { border-color: var(--red); }
+		.favorites-filter:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+		.section-label { color: var(--muted); font-size: 10px; }
+
+		.status {
+			min-height: 24px;
+			margin: 0 0 15px;
+			color: var(--muted);
+			font-size: 10px;
+		}
+
+		.status[data-state="error"] { color: #a62d20; }
+
+		.meal-grid {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 26px 18px;
+			padding-bottom: 70px;
+		}
+
+		.meal-card {
+			min-width: 0;
+			border: 1px solid var(--ink);
+			background: var(--paper);
+			box-shadow: 3px 3px 0 var(--ink);
+			animation: arrive 360ms ease both;
+		}
+
+		.meal-image-wrap {
+			position: relative;
+			aspect-ratio: 4 / 3;
+			overflow: hidden;
+			border-bottom: 1px solid var(--ink);
+			background: #dfe2d5;
+		}
+
+		.meal-image {
+			display: block;
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			transition: transform 240ms ease;
+		}
+
+		.meal-card:hover .meal-image { transform: scale(1.035); }
+
+		.meal-number {
+			position: absolute;
+			top: 10px;
+			left: 10px;
+			padding: 6px 8px;
+			background: var(--lime);
+			color: var(--ink);
+			font: 500 10px var(--mono);
+		}
+
+		.meal-content { padding: 15px 15px 13px; }
+
+		.card-meta {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 7px;
+			margin-bottom: 9px;
+			color: var(--blue);
+			font-size: 9px;
+		}
+
+		.card-meta span + span::before { content: "/"; margin-right: 7px; color: var(--red); }
+
+		.meal-content h3 {
+			margin: 0 0 13px;
+			font-size: 21px;
+			line-height: 1.08;
+			overflow-wrap: anywhere;
+		}
+
+		.meal-content details { border-top: 1px solid var(--line); }
+
+		.meal-actions { display: flex; gap: 8px; margin-top: 13px; }
+
+		.lesson-button {
+			flex: 1;
+			min-width: 0;
+			padding: 10px 11px;
+			border: 1px solid var(--ink);
+			background: var(--lime);
+			color: var(--ink);
+			cursor: pointer;
+			font: 500 10px var(--mono);
+			text-align: left;
+			text-transform: uppercase;
+		}
+
+		.lesson-button:hover { background: var(--ink); color: var(--lime); }
+		.lesson-button:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+		.favorite-button { width: 42px; flex: 0 0 42px; border: 1px solid var(--ink); background: var(--paper); color: var(--red); cursor: pointer; font-size: 20px; line-height: 1; }
+		.favorite-button[aria-pressed="true"] { background: var(--red); color: white; }
+		.favorite-button:hover { background: var(--ink); color: var(--lime); }
+		.favorite-button:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+		.meal-content summary {
+			width: fit-content;
+			padding: 11px 0 1px;
+			color: var(--ink);
+			cursor: pointer;
+			font: 500 10px var(--mono);
+			text-transform: uppercase;
+		}
+
+		.meal-content summary:hover { color: var(--blue); }
+		.meal-content summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+
+		.instructions {
+			max-height: 220px;
+			margin: 10px 0 2px;
+			overflow: auto;
+			color: #41443d;
+			font-size: 13px;
+			line-height: 1.6;
+			white-space: pre-line;
+		}
+
+		.lesson-dialog {
+			width: min(1000px, calc(100% - 28px));
+			max-width: none;
+			max-height: calc(100% - 28px);
+			padding: 0;
+			border: 1px solid var(--ink);
+			background: var(--paper);
+			color: var(--ink);
+			box-shadow: 8px 8px 0 var(--ink);
+		}
+
+		.lesson-dialog::backdrop { background: rgb(23 26 24 / 72%); }
+		.lesson-shell { display: flex; max-height: calc(100vh - 30px); flex-direction: column; }
+
+		.lesson-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 16px;
+			padding: 12px 18px;
+			border-bottom: 1px solid var(--ink);
+			background: var(--ink);
+			color: var(--lime);
+			font: 500 10px var(--mono);
+			text-transform: uppercase;
+		}
+
+		.lesson-close {
+			width: 34px;
+			aspect-ratio: 1;
+			border: 1px solid var(--paper);
+			background: transparent;
+			color: var(--paper);
+			cursor: pointer;
+			font-size: 20px;
+			line-height: 1;
+		}
+
+		.lesson-close:hover { background: var(--red); }
+		.lesson-close:focus-visible { outline: 3px solid var(--lime); outline-offset: 3px; }
+		.lesson-body { overflow: auto; padding: 25px; }
+
+		.lesson-title-row {
+			display: flex;
+			justify-content: space-between;
+			align-items: end;
+			gap: 20px;
+			margin-bottom: 20px;
+		}
+
+		.lesson-title-row h2 { margin: 0; font-size: 34px; line-height: 1; }
+		.lesson-kicker { margin: 0 0 8px; color: var(--blue); font: 500 10px var(--mono); text-transform: uppercase; }
+		.lesson-category { margin: 0; color: var(--muted); font: 10px var(--mono); text-align: right; text-transform: uppercase; }
+
+		.lesson-video {
+			position: relative;
+			aspect-ratio: 16 / 9;
+			max-height: 460px;
+			margin-bottom: 24px;
+			border: 1px solid var(--ink);
+			background: #dfe2d5;
+		}
+
+		.lesson-video iframe { display: block; width: 100%; height: 100%; border: 0; }
+		.video-open-link { position: absolute; right: 10px; bottom: 10px; z-index: 1; padding: 8px 10px; border: 1px solid var(--ink); background: var(--lime); color: var(--ink); font: 500 10px var(--mono); text-decoration: none; text-transform: uppercase; }
+		.video-open-link:hover { background: var(--ink); color: var(--lime); }
+		.video-open-link:focus-visible { outline: 3px solid var(--lime); outline-offset: 2px; }
+
+		.video-unavailable {
+			display: grid;
+			min-height: 190px;
+			place-content: center;
+			padding: 24px;
+			text-align: center;
+		}
+
+		.video-unavailable strong { display: block; margin-bottom: 6px; font-size: 20px; text-transform: uppercase; }
+		.video-unavailable p { margin: 0; color: var(--muted); font-size: 13px; }
+		.video-standalone-link { display: inline-block; margin-top: 14px; padding: 9px 12px; border: 1px solid var(--ink); background: var(--lime); color: var(--ink); font: 500 10px var(--mono); text-decoration: none; text-transform: uppercase; }
+		.video-standalone-link:hover { background: var(--ink); color: var(--lime); }
+		.video-standalone-link:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+		.lesson-columns { display: grid; grid-template-columns: minmax(220px, 0.75fr) minmax(0, 1.25fr); gap: 28px; }
+		.lesson-section { min-width: 0; }
+		.lesson-section h3 { margin: 0 0 7px; font-size: 18px; text-transform: uppercase; }
+		.lesson-subtitle { margin: 0 0 13px; color: var(--muted); font: 10px var(--mono); text-transform: uppercase; }
+		.lesson-list { display: grid; gap: 7px; }
+		.ingredient-tools { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+		.ingredient-tools .lesson-subtitle { margin: 0; }
+		.scale-control { display: flex; align-items: center; gap: 7px; color: var(--muted); font: 10px var(--mono); text-transform: uppercase; }
+		.scale-control select { min-height: 32px; padding: 4px 7px; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); font: 10px var(--mono); }
+		.scale-control select:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+		.lesson-check {
+			display: flex;
+			align-items: flex-start;
+			gap: 9px;
+			padding: 9px;
+			border: 1px solid var(--line);
+			background: rgb(255 255 255 / 35%);
+			font-size: 13px;
+			line-height: 1.4;
+		}
+
+		.lesson-check input { width: 16px; height: 16px; flex: 0 0 auto; margin: 1px 0 0; accent-color: var(--blue); }
+		.lesson-check:has(input:checked) span { color: var(--muted); text-decoration: line-through; }
+		.lesson-check:focus-within { outline: 2px solid var(--blue); outline-offset: 2px; }
+		.lesson-progress-row { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; }
+		.lesson-progress-row progress { width: 100%; height: 8px; accent-color: var(--blue); }
+		.lesson-progress-label { flex: 0 0 auto; color: var(--muted); font: 10px var(--mono); }
+		.lesson-step { padding: 12px 0; border-top: 1px solid var(--line); }
+		.lesson-step .lesson-check { border: 0; background: transparent; padding: 0; font-size: 14px; }
+
+		.timer-tool {
+			display: grid;
+			grid-template-columns: 1fr auto;
+			align-items: end;
+			gap: 10px;
+			margin-top: 18px;
+			padding: 14px;
+			border: 1px solid var(--ink);
+			background: var(--lime);
+		}
+
+		.timer-tool label { display: grid; gap: 7px; font: 10px var(--mono); text-transform: uppercase; }
+		.timer-tool input { width: 100%; min-height: 38px; padding: 7px 9px; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); }
+		.timer-tool button { min-height: 38px; padding: 0 13px; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); cursor: pointer; font: 10px var(--mono); text-transform: uppercase; }
+		.timer-tool button:hover { background: var(--blue); }
+		.timer-tool button:focus-visible, .timer-tool input:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+		.timer-display { grid-column: 1 / -1; margin: 0; font: 500 11px var(--mono); }
+
+		.empty-state {
+			grid-column: 1 / -1;
+			padding: 36px 20px;
+			border: 1px dashed var(--ink);
+			text-align: center;
+		}
+
+		.empty-state strong {
+			display: block;
+			margin-bottom: 7px;
+			font-size: 22px;
+			text-transform: uppercase;
+		}
+
+		.empty-state p { margin: 0; color: var(--muted); font-size: 14px; }
+
+		footer {
+			display: flex;
+			justify-content: space-between;
+			gap: 16px;
+			padding: 17px 6vw;
+			border-top: 1px solid var(--ink);
+			background: var(--lime);
+			font: 500 10px var(--mono);
+			text-transform: uppercase;
+		}
+
+		.visually-hidden {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			padding: 0;
+			margin: -1px;
+			overflow: hidden;
+			clip: rect(0, 0, 0, 0);
+			white-space: nowrap;
+			border: 0;
+		}
+
+		@keyframes arrive {
+			from { opacity: 0; transform: translateY(8px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			*, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+		}
+
+		@media (max-width: 760px) {
+			main { width: min(100% - 36px, 560px); }
+			.intro { grid-template-columns: 1fr; gap: 19px; padding-top: 49px; }
+			.intro-note { max-width: 240px; }
+			h1 { font-size: 68px; }
+			.meal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 13px; }
+			.results-heading { margin-top: 43px; }
+			.lesson-columns { grid-template-columns: 1fr; gap: 23px; }
+			.lesson-video { max-height: 350px; }
+		}
+
+		@media (max-width: 480px) {
+			.masthead { padding: 0 18px; font-size: 9px; }
+			main { width: calc(100% - 32px); }
+			h1 { font-size: 54px; }
+			.search-bar { gap: 2px; padding: 6px; }
+			.search-bar input { padding: 10px 8px; font-size: 14px; }
+			.search-bar button { min-width: 91px; padding: 0 10px; font-size: 10px; }
+			.meal-grid { grid-template-columns: 1fr; gap: 18px; }
+			.meal-content h3 { font-size: 23px; }
+			.lesson-body { padding: 17px; }
+			.lesson-title-row { align-items: start; flex-direction: column; gap: 9px; }
+			.lesson-title-row h2 { font-size: 28px; }
+			.lesson-category { text-align: left; }
+			footer { padding: 15px 18px; font-size: 9px; }
+		}
+	</style>
+</head>
+<body>
+	<header class="masthead">
+		<strong>Good Things / Recipe Index</strong>
+		<span>Issue 01 &nbsp;·&nbsp; Est. whenever</span>
+	</header>
+
+	<main>
+		<section class="intro" aria-labelledby="page-title">
+			<div>
+				<p class="eyebrow">A little inspiration for the kitchen</p>
+				<h1 id="page-title">Dinner<br><span>sorted.</span></h1>
+			</div>
+			<p class="intro-note">Find a new favorite.<br>Make a good mess.</p>
+		</section>
+
+		<form class="search-bar" id="search-form" role="search">
+			<label class="visually-hidden" for="search-input">Search recipes by name</label>
+			<input id="search-input" name="search" type="search" placeholder="Try: pasta, curry, cake..." autocomplete="off">
+			<button id="search-button" type="submit">Find a meal</button>
+		</form>
+
+		<section aria-labelledby="results-title">
+			<div class="results-heading">
+				<h2 id="results-title">On the menu</h2>
+				<span class="section-label">Fresh ideas, zero fuss</span>
+				<button class="favorites-filter" id="favorites-filter" type="button" aria-pressed="false">Show saved recipes</button>
+			</div>
+			<p class="status" id="status" role="status" aria-live="polite">Loading the good stuff...</p>
+			<div class="meal-grid" id="meal-grid" aria-busy="true"></div>
+		</section>
+	</main>
+
+	<dialog class="lesson-dialog" id="lesson-dialog" aria-labelledby="lesson-title">
+		<div class="lesson-shell">
+			<header class="lesson-header">
+				<span>Cooking lesson / good things index</span>
+				<button class="lesson-close" id="lesson-close" type="button" aria-label="Close cooking lesson">&times;</button>
+			</header>
+			<div class="lesson-body">
+				<div class="lesson-title-row">
+					<div>
+						<p class="lesson-kicker">Guided kitchen session</p>
+						<h2 id="lesson-title"></h2>
+					</div>
+					<p class="lesson-category" id="lesson-category"></p>
+				</div>
+				<div class="lesson-video" id="lesson-video" aria-label="Recipe video"></div>
+				<div class="lesson-columns">
+					<section class="lesson-section" aria-labelledby="ingredients-title">
+						<h3 id="ingredients-title">Get set</h3>
+						<div class="ingredient-tools">
+							<p class="lesson-subtitle" id="ingredient-progress">Ingredients / check them off</p>
+							<label class="scale-control" for="serving-scale">Scale
+								<select id="serving-scale">
+									<option value="0.5">0.5x</option>
+									<option value="1" selected>1x</option>
+									<option value="2">2x</option>
+							</select>
+							</label>
+						</div>
+						<div class="lesson-list" id="ingredient-list"></div>
+					</section>
+					<section class="lesson-section" aria-labelledby="steps-title">
+						<h3 id="steps-title">Cook along</h3>
+						<div class="lesson-progress-row">
+							<progress id="step-progress" value="0" max="1" aria-label="Cooking lesson progress"></progress>
+							<span class="lesson-progress-label" id="step-progress-label">0 / 0 steps</span>
+						</div>
+						<div class="lesson-list" id="step-list"></div>
+						<div class="timer-tool">
+							<label for="timer-minutes">Set a timer / minutes
+								<input id="timer-minutes" type="number" min="1" max="240" step="1" value="5" required>
+							</label>
+							<button id="timer-button" type="button">Start timer</button>
+							<p class="timer-display" id="timer-display" role="timer" aria-live="polite">Ready when you are.</p>
+						</div>
+					</section>
+				</div>
+			</div>
+		</div>
+	</dialog>
+
+	<footer>
+		<span>Good food, found.</span>
+		<span>Take what you need &nbsp;✳</span>
+	</footer>
+
+	<script>
+		const apiUrl = "https://www.themealdb.com/api/json/v1/1/search.php?s=";
+		const searchForm = document.getElementById("search-form");
+		const searchInput = document.getElementById("search-input");
+		const searchButton = document.getElementById("search-button");
+		const mealGrid = document.getElementById("meal-grid");
+		const statusMessage = document.getElementById("status");
+		const lessonDialog = document.getElementById("lesson-dialog");
+		const lessonTitle = document.getElementById("lesson-title");
+		const lessonCategory = document.getElementById("lesson-category");
+		const lessonVideo = document.getElementById("lesson-video");
+		const ingredientList = document.getElementById("ingredient-list");
+		const ingredientProgress = document.getElementById("ingredient-progress");
+		const stepList = document.getElementById("step-list");
+		const stepProgress = document.getElementById("step-progress");
+		const stepProgressLabel = document.getElementById("step-progress-label");
+		const timerMinutes = document.getElementById("timer-minutes");
+		const timerButton = document.getElementById("timer-button");
+		const timerDisplay = document.getElementById("timer-display");
+		const favoritesFilter = document.getElementById("favorites-filter");
+		const servingScale = document.getElementById("serving-scale");
+		const storagePrefix = "good-things-lesson:";
+		const favoriteStorageKey = "good-things-favorites";
+		let favoriteMeals = readFavoriteMeals();
+		let currentMeals = [];
+		let showingFavoritesOnly = false;
+		let latestRequest = 0;
+		let activeMeal = null;
+		let activeLessonState = { ingredients: [], steps: [] };
+		let timerInterval = null;
+
+		function addTextElement(parent, tagName, className, text) {
+			const element = document.createElement(tagName);
+			if (className) element.className = className;
+			element.textContent = text;
+			parent.append(element);
+			return element;
+		}
+
+		function showEmptyState(title, message) {
+			const emptyState = document.createElement("div");
+			emptyState.className = "empty-state";
+			addTextElement(emptyState, "strong", "", title);
+			addTextElement(emptyState, "p", "", message);
+			mealGrid.replaceChildren(emptyState);
+		}
+
+		function readFavoriteMeals() {
+			try {
+				const saved = JSON.parse(localStorage.getItem(favoriteStorageKey) || "[]");
+				return new Map(saved.filter((meal) => meal && meal.idMeal).map((meal) => [String(meal.idMeal), meal]));
+			} catch {
+				return new Map();
+			}
+		}
+
+		function saveFavoriteMeals() {
+			try {
+				localStorage.setItem(favoriteStorageKey, JSON.stringify([...favoriteMeals.values()]));
+			} catch {
+			}
+		}
+
+		function updateFavoriteFilter() {
+			favoritesFilter.setAttribute("aria-pressed", String(showingFavoritesOnly));
+			favoritesFilter.textContent = showingFavoritesOnly ? "Show all recipes" : "Show saved recipes";
+		}
+
+		function renderMealResults() {
+			const meals = showingFavoritesOnly ? [...favoriteMeals.values()] : currentMeals;
+			if (!meals.length) {
+				if (showingFavoritesOnly) {
+					statusMessage.textContent = "No saved recipes yet.";
+					showEmptyState("Your index is empty.", "Save a recipe and it will be waiting here.");
+				} else {
+					statusMessage.textContent = "No recipes on this page yet.";
+					showEmptyState("Nothing simmering.", "Try another ingredient or recipe name.");
+				}
+				return;
+			}
+
+			mealGrid.replaceChildren(...meals.map((meal, index) => createMealCard(meal, index)));
+			statusMessage.textContent = showingFavoritesOnly
+				? `${meals.length} saved ${meals.length === 1 ? "recipe" : "recipes"}`
+				: `${meals.length} ${meals.length === 1 ? "recipe" : "recipes"} found`;
+		}
+
+		function readLessonState(mealId) {
+			try {
+				const saved = JSON.parse(localStorage.getItem(`${storagePrefix}${mealId}`) || "{}");
+				return {
+					ingredients: Array.isArray(saved.ingredients) ? saved.ingredients : [],
+					steps: Array.isArray(saved.steps) ? saved.steps : []
+				};
+			} catch {
+				return { ingredients: [], steps: [] };
+			}
+		}
+
+		function saveLessonState() {
+			if (!activeMeal) return;
+			try {
+				localStorage.setItem(`${storagePrefix}${activeMeal.idMeal}`, JSON.stringify(activeLessonState));
+			} catch {
+			}
+		}
+
+		function getMealIngredients(meal) {
+			return Array.from({ length: 20 }, (unused, index) => ({
+				name: meal[`strIngredient${index + 1}`]?.trim(),
+				measure: meal[`strMeasure${index + 1}`]?.trim()
+			})).filter((ingredient) => ingredient.name);
+		}
+
+		function parseQuantity(quantityText) {
+			const parts = quantityText.split(/\s+/);
+			if (parts.length === 2) {
+				const [numerator, denominator] = parts[1].split("/").map(Number);
+				return Number(parts[0]) + numerator / denominator;
+			}
+			if (quantityText.includes("/")) {
+				const [numerator, denominator] = quantityText.split("/").map(Number);
+				return numerator / denominator;
+			}
+			return Number(quantityText);
+		}
+
+		function formatQuantity(quantity) {
+			return String(Number(quantity.toFixed(2)));
+		}
+
+		function scaleMeasure(measure, factor) {
+			if (!measure || factor === 1) return measure;
+			const match = measure.match(/^(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?)(?:\s*(?:-|–|to)\s*(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?))?(.*)$/i);
+			if (!match) return measure;
+			const start = formatQuantity(parseQuantity(match[1]) * factor);
+			const end = match[2] ? `-${formatQuantity(parseQuantity(match[2]) * factor)}` : "";
+			return `${start}${end}${match[3]}`;
+		}
+
+		function renderIngredients() {
+			if (!activeMeal) return;
+			const ingredients = getMealIngredients(activeMeal);
+			const factor = Number(servingScale.value);
+			ingredientList.replaceChildren();
+			if (ingredients.length) {
+				ingredients.forEach((ingredient, index) => {
+					const measure = scaleMeasure(ingredient.measure, factor);
+					const label = [measure, ingredient.name].filter(Boolean).join(" ");
+					ingredientList.append(createLessonCheck(label, activeLessonState.ingredients.includes(index), "ingredientIndex", index));
+				});
+			} else {
+				addTextElement(ingredientList, "p", "lesson-subtitle", "No ingredient list is available for this recipe.");
+			}
+			updateIngredientProgress();
+		}
+
+		function getLessonSteps(instructions) {
+			const text = (instructions || "").replace(/\r/g, "").trim();
+			if (!text) return [];
+
+			const lines = text.split(/\n+/).map((step) => step.replace(/^\s*(?:(?:step\s*)?\d+[.)]?|step\s+\d+)\s*/i, "").trim()).filter(Boolean);
+			if (lines.length > 1) return lines;
+
+			const numberedSteps = text.match(/(?:^|\s)(?:step\s*)?\d+[.)]\s+/gi);
+			if (numberedSteps?.length > 1) {
+				return text.split(/(?:^|\s)(?:step\s*)?\d+[.)]\s+/gi).map((step) => step.trim()).filter(Boolean);
+			}
+
+			return text.split(/(?<=[.!?])\s+(?=[A-Z0-9])/).map((step) => step.trim()).filter(Boolean);
+		}
+
+		function getYouTubeVideoId(videoUrl) {
+			if (!videoUrl) return null;
+			try {
+				const url = new URL(videoUrl);
+				if (url.protocol !== "https:") return null;
+				const hostname = url.hostname.toLowerCase().replace(/^www\./, "");
+				let videoId = null;
+				if (hostname === "youtu.be") {
+					videoId = url.pathname.split("/").filter(Boolean)[0];
+				} else if (["youtube.com", "m.youtube.com", "youtube-nocookie.com"].includes(hostname)) {
+					videoId = url.searchParams.get("v") || url.pathname.match(/^\/(?:embed|shorts)\/([A-Za-z0-9_-]+)/)?.[1];
+				}
+				return videoId && /^[A-Za-z0-9_-]{11}$/.test(videoId) ? videoId : null;
+			} catch {
+				return null;
+			}
+		}
+
+		function createLessonCheck(labelText, checked, dataName, index) {
+			const label = document.createElement("label");
+			label.className = "lesson-check";
+			const checkbox = document.createElement("input");
+			checkbox.type = "checkbox";
+			checkbox.checked = checked;
+			checkbox.dataset[dataName] = String(index);
+			const text = document.createElement("span");
+			text.textContent = labelText;
+			label.append(checkbox, text);
+			return label;
+		}
+
+		function updateStepProgress() {
+			const checkboxes = [...stepList.querySelectorAll("input[data-step-index]")];
+			const completed = checkboxes.filter((checkbox) => checkbox.checked).length;
+			stepProgress.max = Math.max(checkboxes.length, 1);
+			stepProgress.value = completed;
+			stepProgressLabel.textContent = `${completed} / ${checkboxes.length} steps`;
+			activeLessonState.steps = checkboxes.flatMap((checkbox) => checkbox.checked ? [Number(checkbox.dataset.stepIndex)] : []);
+			saveLessonState();
+		}
+
+		function openLesson(meal) {
+			stopTimer("Ready when you are.");
+			activeMeal = meal;
+			activeLessonState = readLessonState(meal.idMeal);
+			lessonTitle.textContent = meal.strMeal || "Untitled meal";
+			lessonCategory.textContent = [meal.strCategory, meal.strArea].filter(Boolean).join(" / ");
+			lessonVideo.replaceChildren();
+
+			const videoId = getYouTubeVideoId(meal.strYoutube);
+			if (videoId && window.location.protocol !== "file:") {
+				const video = document.createElement("iframe");
+				video.title = `Cooking video for ${meal.strMeal || "this recipe"}`;
+				video.src = `https://www.youtube-nocookie.com/embed/${videoId}`;
+				video.allow = "accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+				video.allowFullscreen = true;
+				video.loading = "lazy";
+				video.referrerPolicy = "strict-origin-when-cross-origin";
+				const watchLink = document.createElement("a");
+				watchLink.className = "video-open-link";
+				watchLink.href = `https://www.youtube.com/watch?v=${videoId}`;
+				watchLink.target = "_blank";
+				watchLink.rel = "noopener noreferrer";
+				watchLink.textContent = "Open on YouTube";
+				lessonVideo.append(video, watchLink);
+			} else {
+				const fallback = document.createElement("div");
+				fallback.className = "video-unavailable";
+				if (videoId) {
+					addTextElement(fallback, "strong", "", "Video lesson ready");
+					addTextElement(fallback, "p", "", "Open the video on YouTube and cook along.");
+					const watchLink = document.createElement("a");
+					watchLink.className = "video-standalone-link";
+					watchLink.href = `https://www.youtube.com/watch?v=${videoId}`;
+					watchLink.target = "_blank";
+					watchLink.rel = "noopener noreferrer";
+					watchLink.textContent = "Watch on YouTube";
+					fallback.append(watchLink);
+				} else {
+					addTextElement(fallback, "strong", "", "No video for this one");
+					addTextElement(fallback, "p", "", "Use the guided steps below and cook at your own pace.");
+				}
+				lessonVideo.append(fallback);
+			}
+
+			servingScale.value = "1";
+			renderIngredients();
+
+			const steps = getLessonSteps(meal.strInstructions);
+			stepList.replaceChildren();
+			if (steps.length) {
+				steps.forEach((step, index) => {
+					const row = document.createElement("div");
+					row.className = "lesson-step";
+					row.append(createLessonCheck(step, activeLessonState.steps.includes(index), "stepIndex", index));
+					stepList.append(row);
+				});
+			} else {
+				addTextElement(stepList, "p", "lesson-subtitle", "No cooking instructions are available for this recipe.");
+			}
+			updateStepProgress();
+			lessonDialog.showModal();
+		}
+
+		function updateIngredientProgress() {
+			const checkboxes = [...ingredientList.querySelectorAll("input[data-ingredient-index]")];
+			const completed = checkboxes.filter((checkbox) => checkbox.checked).length;
+			ingredientProgress.textContent = `Ingredients / ${completed} of ${checkboxes.length} checked`;
+			activeLessonState.ingredients = checkboxes.flatMap((checkbox) => checkbox.checked ? [Number(checkbox.dataset.ingredientIndex)] : []);
+			saveLessonState();
+		}
+
+		function stopTimer(message) {
+			if (timerInterval !== null) window.clearInterval(timerInterval);
+			timerInterval = null;
+			timerButton.textContent = "Start timer";
+			timerDisplay.textContent = message;
+		}
+
+		function updateFavoriteButton(button, meal) {
+			const isSaved = favoriteMeals.has(String(meal.idMeal));
+			button.textContent = isSaved ? "★" : "☆";
+			button.setAttribute("aria-pressed", String(isSaved));
+			button.setAttribute("aria-label", isSaved ? `Remove ${meal.strMeal} from saved recipes` : `Save ${meal.strMeal}`);
+			button.title = isSaved ? "Remove from saved recipes" : "Save recipe";
+		}
+
+		function createMealCard(meal, index) {
+			const card = document.createElement("article");
+			card.className = "meal-card";
+			card.style.animationDelay = `${Math.min(index, 8) * 45}ms`;
+
+			const imageWrap = document.createElement("div");
+			imageWrap.className = "meal-image-wrap";
+			const image = document.createElement("img");
+			image.className = "meal-image";
+			image.src = meal.strMealThumb;
+			image.alt = meal.strMeal ? `A serving of ${meal.strMeal}` : "Prepared meal";
+			image.loading = "lazy";
+			imageWrap.append(image);
+			addTextElement(imageWrap, "span", "meal-number", `No. ${String(index + 1).padStart(2, "0")}`);
+
+			const content = document.createElement("div");
+			content.className = "meal-content";
+			const meta = document.createElement("div");
+			meta.className = "card-meta";
+			if (meal.strCategory) addTextElement(meta, "span", "", meal.strCategory);
+			if (meal.strArea) addTextElement(meta, "span", "", meal.strArea);
+			if (meta.childElementCount) content.append(meta);
+			addTextElement(content, "h3", "", meal.strMeal || "Untitled meal");
+			const actions = document.createElement("div");
+			actions.className = "meal-actions";
+			const lessonButton = addTextElement(actions, "button", "lesson-button", "Start cooking lesson");
+			lessonButton.type = "button";
+			lessonButton.addEventListener("click", () => openLesson(meal));
+			const favoriteButton = document.createElement("button");
+			favoriteButton.className = "favorite-button";
+			favoriteButton.type = "button";
+			favoriteButton.addEventListener("click", () => {
+				const mealId = String(meal.idMeal);
+				if (favoriteMeals.has(mealId)) favoriteMeals.delete(mealId);
+				else favoriteMeals.set(mealId, meal);
+				saveFavoriteMeals();
+				renderMealResults();
+			});
+			updateFavoriteButton(favoriteButton, meal);
+			actions.append(favoriteButton);
+			content.append(actions);
+
+			card.append(imageWrap, content);
+			return card;
+		}
+
+		ingredientList.addEventListener("change", (event) => {
+			if (event.target.matches("input[data-ingredient-index]")) updateIngredientProgress();
+		});
+
+		stepList.addEventListener("change", (event) => {
+			if (event.target.matches("input[data-step-index]")) updateStepProgress();
+		});
+
+		servingScale.addEventListener("change", renderIngredients);
+
+		favoritesFilter.addEventListener("click", () => {
+			showingFavoritesOnly = !showingFavoritesOnly;
+			updateFavoriteFilter();
+			renderMealResults();
+		});
+
+		document.getElementById("lesson-close").addEventListener("click", () => lessonDialog.close());
+		lessonDialog.addEventListener("close", () => stopTimer("Timer reset."));
+
+		timerButton.addEventListener("click", () => {
+			if (timerInterval !== null) {
+				stopTimer("Timer stopped.");
+				return;
+			}
+			if (!timerMinutes.reportValidity()) return;
+
+			let secondsRemaining = Number(timerMinutes.value) * 60;
+			const showRemainingTime = () => {
+				const minutes = Math.floor(secondsRemaining / 60);
+				const seconds = String(secondsRemaining % 60).padStart(2, "0");
+				timerDisplay.textContent = `${minutes}:${seconds} remaining`;
+			};
+			showRemainingTime();
+			timerButton.textContent = "Stop timer";
+			timerInterval = window.setInterval(() => {
+				secondsRemaining -= 1;
+				if (secondsRemaining <= 0) {
+					stopTimer("Time's up. Your timer is done.");
+					return;
+				}
+				showRemainingTime();
+			}, 1000);
+		});
+
+		async function loadMeals(searchTerm = "") {
+			const requestId = ++latestRequest;
+			const requestUrl = `${apiUrl}${encodeURIComponent(searchTerm.trim())}`;
+			mealGrid.setAttribute("aria-busy", "true");
+			searchButton.disabled = true;
+			statusMessage.dataset.state = "loading";
+			statusMessage.textContent = searchTerm.trim() ? `Looking for “${searchTerm.trim()}”...` : "Loading the good stuff...";
+			mealGrid.replaceChildren();
+
+			try {
+				const response = await fetch(requestUrl);
+				if (!response.ok) throw new Error("The recipe shelf is taking a break.");
+				const data = await response.json();
+				if (requestId !== latestRequest) return;
+
+				const meals = Array.isArray(data.meals) ? data.meals : [];
+				currentMeals = meals;
+				renderMealResults();
+			} catch (error) {
+				if (requestId !== latestRequest) return;
+				statusMessage.dataset.state = "error";
+				statusMessage.textContent = "Could not reach the recipe shelf.";
+				showEmptyState("Connection hiccup.", "Check your connection and give it another try.");
+			} finally {
+				if (requestId === latestRequest) {
+					mealGrid.setAttribute("aria-busy", "false");
+					searchButton.disabled = false;
+				}
+			}
+		}
+
+		searchForm.addEventListener("submit", (event) => {
+			event.preventDefault();
+			showingFavoritesOnly = false;
+			updateFavoriteFilter();
+			loadMeals(searchInput.value);
+		});
+
+		loadMeals();
+	</script>
+</body>
+</html>
